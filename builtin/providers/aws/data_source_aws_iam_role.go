@@ -1,9 +1,8 @@
-pckage aws
+package aws
 
 import (
 	"fmt"
-	"sort"
-	"strings"
+	"log"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/iam"
@@ -17,30 +16,29 @@ func dataSourceAwsIAMRole() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"arn": {
-				Type: schema.TypeString,
-				Computed: true,	
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 			"assume_role_policy_document": {
-				Type: schema.TypeString,
+				Type:     schema.TypeString,
 				Computed: true,
 			},
 			"create_date": {
-				Type: schema.TypeString,
+				Type:     schema.TypeString,
 				Computed: true,
 			},
 			"path": {
-				Type: schema.TypeString,
+				Type:     schema.TypeString,
 				Computed: true,
 			},
 			"role_id": {
-				Type: schema.TypeString,
-				Computed: true,	
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 			"role_name": {
-				Type: schema.TypeString,
-				Computed: true,	
+				Type:     schema.TypeString,
+				Required: true,
 			},
-			"tags": dataSourceTagsSchema(),
 		},
 	}
 }
@@ -48,23 +46,32 @@ func dataSourceAwsIAMRole() *schema.Resource {
 func dataSourceAwsIAMRoleRead(d *schema.ResourceData, meta interface{}) error {
 	iamconn := meta.(*AWSClient).iamconn
 
-	req := &iam.ListRoleInput{}
-	resp, err := conn.ListRole(req)
-    if err != nil {
-        return err
-    }
-		if resp == nil || len(resp.Arn) == 0 {
-        return fmt.Errorf("no IAM role found")
-    }
+	roleName := d.Get("role_name").(string)
 
-	role := resp.Roles[0]
-	d.setId(role.RoleId)
-	d.set("arn", role.Arn)
-	d.set("assume_role_policy_document", role.AssumeRolePolicyDocument)
-	d.set("create_date", role.CreateDate)
-	d.set("role_id", role.RoleId)
-	d.set("role_name", role.RoleName)
-	d.set("tags", tagsToMap(role.Tags))
+	req := &iam.GetRoleInput{
+		RoleName: aws.String(roleName),
+	}
+
+	resp, err := iamconn.GetRole(req)
+	if err != nil {
+		return errwrap.Wrapf("Error getting roles: {{err}}", err)
+	}
+	if resp == nil {
+		return fmt.Errorf("no IAM role found")
+	}
+
+	role := resp.Role
+
+	d.SetId(*role.RoleId)
+	d.Set("arn", role.Arn)
+	d.Set("assume_role_policy_document", role.AssumeRolePolicyDocument)
+	d.Set("create_date", role.CreateDate)
+	d.Set("role_id", role.RoleId)
+
+	log.Printf("[DEBUG] aws_iam_role - ROLE ARN: %s", d.Get("arn"))
+	log.Printf("[DEBUG] aws_iam_role - ROLE ASSUMEROLEPOLICYDOCUMENT: %s", d.Get("assume_role_policy_document"))
+	log.Printf("[DEBUG] aws_iam_role - ROLE CREATEDATE: %s", d.Get("create_date"))
+	log.Printf("[DEBUG] aws_iam_role - ROLE ROLEID: %s", d.Get("role_id"))
 
 	return nil
 }
