@@ -66,12 +66,8 @@ func dataSourceAwsIAMRoleRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("arn", role.Arn)
 	d.Set("assume_role_policy_document", role.AssumeRolePolicyDocument)
 	d.Set("create_date", role.CreateDate)
+	d.Set("path", role.Path)
 	d.Set("role_id", role.RoleId)
-
-	log.Printf("[DEBUG] aws_iam_role - ROLE ARN: %s", d.Get("arn"))
-	log.Printf("[DEBUG] aws_iam_role - ROLE ASSUMEROLEPOLICYDOCUMENT: %s", d.Get("assume_role_policy_document"))
-	log.Printf("[DEBUG] aws_iam_role - ROLE CREATEDATE: %s", d.Get("create_date"))
-	log.Printf("[DEBUG] aws_iam_role - ROLE ROLEID: %s", d.Get("role_id"))
 
 	return nil
 }
