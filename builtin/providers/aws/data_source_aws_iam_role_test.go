@@ -22,7 +22,6 @@ func TestAccAWSDataSourceIAMRole_basic(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aws_iam_role.test", "path", "/testpath/"),
 					resource.TestCheckResourceAttr("data.aws_iam_role.test", "role_name", "TestRole"),
 					resource.TestMatchResourceAttr("data.aws_iam_role.test", "arn", regexp.MustCompile("^arn:aws:iam::[0-9]{12}:role/testpath/TestRole$")),
-					resource.TestMatchResourceAttr("data.aws_iam_role.test", "create_date", regexp.MustCompile("^20[0-9]{2}-")),
 				),
 			},
 		},

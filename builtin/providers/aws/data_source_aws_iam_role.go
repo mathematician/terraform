@@ -22,10 +22,6 @@ func dataSourceAwsIAMRole() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"create_date": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
 			"path": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -64,7 +60,6 @@ func dataSourceAwsIAMRoleRead(d *schema.ResourceData, meta interface{}) error {
 	d.SetId(*role.RoleId)
 	d.Set("arn", role.Arn)
 	d.Set("assume_role_policy_document", role.AssumeRolePolicyDocument)
-	d.Set("create_date", role.CreateDate)
 	d.Set("path", role.Path)
 	d.Set("role_id", role.RoleId)
 
