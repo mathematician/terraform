@@ -1,12 +1,10 @@
 package aws
 
 import (
-	//    "fmt"
 	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/resource"
-	//    "github.com/hashicorp/terraform/terraform"
 )
 
 func TestAccAWSDataSourceIAMRole_basic(t *testing.T) {
